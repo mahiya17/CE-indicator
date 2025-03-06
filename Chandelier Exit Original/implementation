@@ -1,0 +1,51 @@
+1. Overview
+Purpose: Uses an ATR‑based stop to signal potential trend direction changes.
+Basic Idea: Plots dynamic “long stop” or “short stop” lines, flipping between them when price closes beyond the prior stop.
+2. Inputs / Settings
+ATR Period (length)
+Default 22; controls the lookback for calculating the Average True Range.
+ATR Multiplier (mult)
+Default 3.0; multiplies the ATR to determine stop distance.
+Use Close Price for Extremums (useClose)
+If checked, the script uses the highest/lowest close over the ATR period rather than the absolute high/low.
+Show Buy/Sell Labels (showLabels)
+Toggles the display of “Buy” and “Sell” markers on the chart.
+Highlight State (highlightState)
+Fills the area between price and the stop line with a color to show whether it’s currently “long” or “short.”
+Await Bar Confirmation (awaitBarConfirmation)
+Delays alerts until a bar closes and confirms direction flips or signals.
+3. Core Calculations
+Calculate ATR
+atr = mult * ta.atr(length)
+Determine Long Stop
+Finds highest close/high over length bars, subtracts ATR.
+Uses logic to “ratchet” the stop upward if price remains above it.
+Determine Short Stop
+Finds lowest close/low over length bars, adds ATR.
+Uses logic to “ratchet” the stop downward if price remains below it.
+Direction Determination
+dir is +1 for long, ‑1 for short, based on whether price closes above or below the previous stop line.
+4. Buy & Sell Logic
+Buy Signal
+Triggers when dir flips from ‑1 to +1 (i.e.\ from short to long).
+Plots a circle and optional “Buy” label at the new stop.
+Sell Signal
+Triggers when dir flips from +1 to ‑1 (i.e.\ from long to short).
+Plots a circle and optional “Sell” label at the new stop.
+5. Plot Rendering
+Stop Lines
+Plots the line for the active side (long or short).
+Fills
+If highlightState is on, fills the region between the stop line and the midpoint price (e.g.\ ohlc4) with green when long, red when short.
+Labels
+Plots shape markers for each Buy/Sell signal if showLabels is enabled.
+6. Alerts
+Configured via alertcondition() calls:
+Direction Change (whenever dir differs from dir[1])
+Buy (when buySignal is true)
+Sell (when sellSignal is true)
+If “Await Bar Confirmation” is checked, these alerts only fire once the bar closes.
+7. Key Points
+The script is licensed under GPL‑3.0.
+It’s a classic Chandelier Exit approach: a trailing stop that flips long/short based on ATR multiples.
+Defaults are 22‑period ATR, 3.0 multiplier, and “useClose” for extremums.
