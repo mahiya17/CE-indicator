@@ -1,0 +1,78 @@
+1. Overview
+Purpose: Identifies two phases (Momentum and Trend Exhaustion) to spot potential trend reversals.
+Phases:
+Momentum Phase: 9‑bar (sometimes 8‑bar) count.
+Trend Exhaustion Phase: 13‑bar count triggered after a completed Momentum Phase.
+2. Inputs / Settings
+All user‑configurable options are declared at the top via input.* calls:
+
+Momentum Phase
+
+Display Phases: 'Completed', 'Detailed', or 'None'
+Support & Resistance Levels: Toggle lines
+Momentum Phase Risk Levels: Toggle risk lines
+Trend Exhaustion Phase
+
+Display Phases: 'Completed', 'Detailed', or 'None'
+Trend Exhaustion Phase Risk Levels: Toggle risk lines
+Trend Exhaustion Phase Target Levels: Toggle target lines
+Trade Setups
+
+Phase Specific Trade Setup Options: 'Momentum', 'Exhaustion', 'Qualified', or 'None'
+Price Flips against the Phase Specific Trade Setups: Toggles warning labels when price moves against a just‑triggered signal
+These inputs dictate what phases are visible, whether lines/levels are displayed, and which trade signals are generated.
+
+3. Internal Data Structures
+Script defines three type blocks:
+
+bar
+Stores open, high, low, close, and bar index.
+trb (momentum phase tracking)
+bSC, sSC: bullish/bearish momentum counters
+bSH/bSL, sSH/sSL: tracking extremes (high/low) within momentum phase
+tre (trend exhaustion tracking)
+bCC, sCC: bullish/bearish exhaustion counters
+bC8/sC8: store the bar’s close when the 8th exhaustion count occurs
+bCHt/bCLt/sCHt/sCLt: track highest/lowest bar within exhaustion phase
+bCD/sCD: “risk” levels for bullish/bearish exhaustion
+bCT/sCT: “target” levels for bullish/bearish exhaustion
+4. Momentum Phase Logic
+Uses a 9‑bar count (bSC for bullish, sSC for bearish).
+Checks if bar close is higher (bullish) or lower (bearish) vs. close 4 bars ago.
+Once count reaches 9, it’s considered a completed momentum phase.
+Plots optional S/R lines (from highest/lowest in that 9‑bar window) and risk levels (calculated from extremes).
+5. Trend Exhaustion Phase Logic
+Kicks in after a momentum phase completes.
+Uses a 13‑bar count: price is compared to values two bars prior each step.
+Once it reaches 13, the script considers the trend “exhausted” and plots an “E” label.
+Optionally plots risk (stop) and target levels for that exhaustion phase.
+6. Trade Setups
+Controlled by Phase Specific Trade Setup Options input:
+Momentum: Signals right after momentum phase completes.
+Exhaustion: Signals after exhaustion phase completes.
+Qualified: Requires an exhaustion phase plus an additional momentum sequence.
+None: No trade signals at all.
+Once a setup is triggered (e.g. completed phase), the script looks for a price flip in that phase’s direction (close > close[4] for bullish flip, or vice versa) and plots an “L” or “S” label.
+7. Alerts
+The alert() calls at the bottom detect when:
+Momentum or exhaustion phases complete
+Price crosses S/R levels or risk levels
+A new trend direction is identified (bearish/bullish momentum)
+8. Rendering & Visualization
+Uses plotshape() to place labels (e.g. numbers 1–9, “E” for exhaustion).
+Uses plot() to draw lines for S/R, risk, and target levels (choice of circles, step lines, or diamonds).
+Controlled by user inputs to show/hide specific elements.
+Summary of Flow
+Inputs determine what phases or lines appear.
+Momentum logic counts up to 9 for bullish/bearish.
+Exhaustion logic starts counting up to 13 after momentum is complete.
+Trade setups are signaled if a phase completes + a price flip occurs.
+Alerts fire as soon as these conditions happen.
+That’s the essential structure and functionality behind the script’s implementation.
+
+
+
+
+
+
+
